@@ -1,3 +1,3 @@
 import streamlit as st
 
-st.write("Hello World!")
+st.title("Use generative AI to create images, taglines and captions")
