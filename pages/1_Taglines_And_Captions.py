@@ -1,5 +1,4 @@
 import streamlit as st
-import openai
 from openai_utils import completeChat
 
 st.title("Generate captions and taglines")
