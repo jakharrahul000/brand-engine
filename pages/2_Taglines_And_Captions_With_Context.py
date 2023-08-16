@@ -36,4 +36,3 @@ if question and button:
     )
     st.write(response)
     st.session_state['messages'] = messages
-    print(messages)

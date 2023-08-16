@@ -2,7 +2,6 @@ import streamlit as st
 import openai
 
 def completeChat(messages):
-    # TODO save api key in secrets
     openai.api_key=st.secrets["openai_key"]
     
     response = openai.ChatCompletion.create(
