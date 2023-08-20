@@ -7,7 +7,7 @@ engine_id = "stable-diffusion-xl-1024-v1-0"
 api_host = "https://api.stability.ai"
 api_key = st.secrets["stable_diffusion_key"]
 
-def createImages(prompt):
+def createImages(prompt, cfgScale, steps, clipGuidancePreset, sampler, seed, stylePreset):
     response = requests.post(
         f"{api_host}/v1/generation/{engine_id}/text-to-image",
         headers={
@@ -21,11 +21,15 @@ def createImages(prompt):
                     "text": prompt
                 }
             ],
-            "cfg_scale": 7,
+            "cfg_scale": cfgScale,
             "height": 1024,
             "width": 1024,
             "samples": 4,
-            "steps": 30,
+            "steps": steps,
+            "clip_guidance_preset": clipGuidancePreset,
+            "sampler": sampler,
+            "seed": seed,
+            "style_preset": stylePreset
         },
     )
 
