@@ -30,7 +30,7 @@ if question and button:
     messages.append(
         {"role": "user", "content": question}
     )
-    response = completeChat(messages)
+    response = completeChat(messages, 0)
     messages.append(
         {"role": "assistant", "content": response}
     )
