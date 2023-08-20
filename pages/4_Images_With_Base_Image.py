@@ -1,7 +1,9 @@
 import streamlit as st
-from stablediffusion_utils import createImages
+from stablediffusion_utils import createImagesWithBaseImage
 from utils import base64_to_image
 import pandas as pd
+from PIL import Image
+import io
 
 st.title("Generate images")
 
@@ -125,6 +127,8 @@ with targetsCol:
             )
 
 question=st.text_area("Input the text here")
+baseImage = st.file_uploader("Upload base image", type=['png', 'jpg'])
+imageStrength=st.slider("image_strength - Strength of base image", min_value=0.0, max_value=1.0, value=0.35)
 cfgScale=st.slider("cfg_scale - How strictly the diffusion process adheres to the prompt text (higher values keep your image closer to your prompt)", min_value=0, max_value=35, value=7)
 steps=st.slider("steps - Number of diffusion steps to run", min_value=10, max_value=150, value=50)
 seed=st.slider("seed - Random noise seed", min_value=0, max_value=100, value=0)
@@ -144,7 +148,7 @@ stylePreset=st.selectbox(
 button=st.button("Generate ")
 
 
-if question and button:
+if question and button and baseImage:
     for key, value in potions.items():
         placeholder = f"`{key}`"
         question = question.replace(placeholder, value)
@@ -153,5 +157,11 @@ if question and button:
         placeholder = f"@{key}"
         question = question.replace(placeholder, value)
 
-    images = createImages(question, cfgScale, steps, clipGuidancePreset, sampler, seed, stylePreset)
+    resizedBaseImage = Image.open(baseImage)
+    resizedBaseImage = resizedBaseImage.resize((1024, 1024))
+
+    resizedBaseImageByteArray = io.BytesIO()
+    resizedBaseImage.save(resizedBaseImageByteArray, format="JPEG")
+
+    images = createImagesWithBaseImage(question, resizedBaseImageByteArray.getvalue(), imageStrength, cfgScale, steps, clipGuidancePreset, sampler, seed, stylePreset)
     [st.image(base64_to_image(image)) for image in images]
