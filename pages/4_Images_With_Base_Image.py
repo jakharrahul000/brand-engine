@@ -126,11 +126,14 @@ with targetsCol:
                 key='download-targets'
             )
 
-question=st.text_area("Input the text here")
+question=st.text_area("Input the prompt")
+questionWeight=st.slider("Weight of prompt", min_value=0.0, max_value=1.0, value=1.0)
+negativeQuestion=st.text_area("Input the negative prompt")
+negativeQuestionWeight=st.slider("Weight of negative prompt", min_value=-1.0, max_value=0.0, value=-1.0)
 baseImage = st.file_uploader("Upload base image", type=['png', 'jpg'])
 imageStrength=st.slider("image_strength - Strength of base image", min_value=0.0, max_value=1.0, value=0.35)
-cfgScale=st.slider("cfg_scale - How strictly the diffusion process adheres to the prompt text (higher values keep your image closer to your prompt)", min_value=0, max_value=35, value=7)
 steps=st.slider("steps - Number of diffusion steps to run", min_value=10, max_value=150, value=50)
+cfgScale=st.slider("cfg_scale - How strictly the diffusion process adheres to the prompt text (higher values keep your image closer to your prompt)", min_value=0, max_value=35, value=7)
 seed=st.slider("seed - Random noise seed", min_value=0, max_value=100, value=0)
 clipGuidancePreset=st.selectbox(
     "clip_guidance_preset",
@@ -163,5 +166,28 @@ if question and button and baseImage:
     resizedBaseImageByteArray = io.BytesIO()
     resizedBaseImage.save(resizedBaseImageByteArray, format="JPEG")
 
-    images = createImagesWithBaseImage(question, resizedBaseImageByteArray.getvalue(), imageStrength, cfgScale, steps, clipGuidancePreset, sampler, seed, stylePreset)
-    [st.image(base64_to_image(image)) for image in images]
+    data={
+        "text_prompts[0][text]": question,
+        "text_prompts[0][weight]": questionWeight,
+        "init_image_mode": "IMAGE_STRENGTH",
+        "image_strength": imageStrength,
+        "cfg_scale": cfgScale,
+        "samples": 4,
+        "steps": steps,
+        "clip_guidance_preset": clipGuidancePreset,
+        "sampler": sampler,
+        "seed": seed,
+        "style_preset": stylePreset
+    }
+
+    if len(negativeQuestion) > 0:
+        data["text_prompts[1][text]"] = negativeQuestion
+        data["text_prompts[1][weight]"] = negativeQuestionWeight
+
+    images = createImagesWithBaseImage(data, resizedBaseImageByteArray.getvalue())
+    image1Col, image2Col = st.columns(2)
+    image3Col, image4Col = st.columns(2)
+    image1Col.image(base64_to_image(images[0]))
+    image2Col.image(base64_to_image(images[1]))
+    image3Col.image(base64_to_image(images[2]))
+    image4Col.image(base64_to_image(images[3]))

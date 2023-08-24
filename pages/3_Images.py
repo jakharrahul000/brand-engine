@@ -124,9 +124,12 @@ with targetsCol:
                 key='download-targets'
             )
 
-question=st.text_area("Input the text here")
-cfgScale=st.slider("cfg_scale - How strictly the diffusion process adheres to the prompt text (higher values keep your image closer to your prompt)", min_value=0, max_value=35, value=7)
+question=st.text_area("Input the prompt")
+questionWeight=st.slider("Weight of prompt", min_value=0.0, max_value=1.0, value=1.0)
+negativeQuestion=st.text_area("Input the negative prompt")
+negativeQuestionWeight=st.slider("Weight of negative prompt", min_value=-1.0, max_value=0.0, value=-1.0)
 steps=st.slider("steps - Number of diffusion steps to run", min_value=10, max_value=150, value=50)
+cfgScale=st.slider("cfg_scale - How strictly the diffusion process adheres to the prompt text (higher values keep your image closer to your prompt)", min_value=0, max_value=35, value=7)
 seed=st.slider("seed - Random noise seed", min_value=0, max_value=100, value=0)
 clipGuidancePreset=st.selectbox(
     "clip_guidance_preset",
@@ -153,5 +156,23 @@ if question and button:
         placeholder = f"@{key}"
         question = question.replace(placeholder, value)
 
-    images = createImages(question, cfgScale, steps, clipGuidancePreset, sampler, seed, stylePreset)
-    [st.image(base64_to_image(image)) for image in images]
+    positivePrompt = {
+        "text": question,
+        "weight": questionWeight
+    }
+    textPrompts = []
+    textPrompts.append(positivePrompt)
+    if len(negativeQuestion) > 0:
+        negativePrompt = {
+            "text": negativeQuestion,
+            "weight": negativeQuestionWeight
+        }
+        textPrompts.append(negativePrompt)
+
+    images = createImages(textPrompts, cfgScale, steps, clipGuidancePreset, sampler, seed, stylePreset)
+    image1Col, image2Col = st.columns(2)
+    image3Col, image4Col = st.columns(2)
+    image1Col.image(base64_to_image(images[0]))
+    image2Col.image(base64_to_image(images[1]))
+    image3Col.image(base64_to_image(images[2]))
+    image4Col.image(base64_to_image(images[3]))

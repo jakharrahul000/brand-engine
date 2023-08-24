@@ -5,7 +5,7 @@ engine_id = "stable-diffusion-xl-1024-v1-0"
 api_host = "https://api.stability.ai"
 api_key = st.secrets["stable_diffusion_key"]
 
-def createImages(prompt, cfgScale, steps, clipGuidancePreset, sampler, seed, stylePreset):
+def createImages(textPrompts, cfgScale, steps, clipGuidancePreset, sampler, seed, stylePreset):
     response = requests.post(
         f"{api_host}/v1/generation/{engine_id}/text-to-image",
         headers={
@@ -14,11 +14,7 @@ def createImages(prompt, cfgScale, steps, clipGuidancePreset, sampler, seed, sty
             "Authorization": f"Bearer {api_key}"
         },
         json={
-            "text_prompts": [
-                {
-                    "text": prompt
-                }
-            ],
+            "text_prompts": textPrompts,
             "cfg_scale": cfgScale,
             "height": 1024,
             "width": 1024,
@@ -42,7 +38,7 @@ def createImages(prompt, cfgScale, steps, clipGuidancePreset, sampler, seed, sty
 
         return images
     
-def createImagesWithBaseImage(prompt, baseImage, imageStrength, cfgScale, steps, clipGuidancePreset, sampler, seed, stylePreset):
+def createImagesWithBaseImage(data, baseImage):
     response = requests.post(
         f"{api_host}/v1/generation/{engine_id}/image-to-image",
         headers={
@@ -52,18 +48,7 @@ def createImagesWithBaseImage(prompt, baseImage, imageStrength, cfgScale, steps,
         files={
             "init_image": baseImage
         },
-        data={
-            "text_prompts[0][text]": prompt,
-            "init_image_mode": "IMAGE_STRENGTH",
-            "image_strength": imageStrength,
-            "cfg_scale": cfgScale,
-            "samples": 4,
-            "steps": steps,
-            "clip_guidance_preset": clipGuidancePreset,
-            "sampler": sampler,
-            "seed": seed,
-            "style_preset": stylePreset
-        },
+        data=data,
     )
 
     if response.status_code != 200:
