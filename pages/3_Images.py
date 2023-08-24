@@ -141,7 +141,7 @@ sampler=st.selectbox(
 )
 stylePreset=st.selectbox(
     "style_preset - Pass in a style preset to guide the image model towards a particular style",
-    ("enhance", "anime", "photographic", "digital-art", "comic-book", "fantasy-art", "line-art", "analog-film", "neon-punk", "isometric", "low-poly", "origami", "modeling-compound", "cinematic", "3d-model", "pixel-art", "tile-texture")
+    ("none", "enhance", "anime", "photographic", "digital-art", "comic-book", "fantasy-art", "line-art", "analog-film", "neon-punk", "isometric", "low-poly", "origami", "modeling-compound", "cinematic", "3d-model", "pixel-art", "tile-texture")
 )
 
 button=st.button("Generate ")
