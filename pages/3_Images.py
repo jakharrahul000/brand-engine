@@ -169,7 +169,22 @@ if question and button:
         }
         textPrompts.append(negativePrompt)
 
-    images = createImages(textPrompts, cfgScale, steps, clipGuidancePreset, sampler, seed, stylePreset)
+    json={
+        "text_prompts": textPrompts,
+        "cfg_scale": cfgScale,
+        "height": 1024,
+        "width": 1024,
+        "samples": 4,
+        "steps": steps,
+        "clip_guidance_preset": clipGuidancePreset,
+        "sampler": sampler,
+        "seed": seed
+    }
+
+    if stylePreset != 'none':
+        json["style_preset"] = stylePreset
+
+    images = createImages(json)
     image1Col, image2Col = st.columns(2)
     image3Col, image4Col = st.columns(2)
     image1Col.image(base64_to_image(images[0]))

@@ -176,9 +176,11 @@ if question and button and baseImage:
         "steps": steps,
         "clip_guidance_preset": clipGuidancePreset,
         "sampler": sampler,
-        "seed": seed,
-        "style_preset": stylePreset
+        "seed": seed
     }
+
+    if stylePreset != 'none':
+        data["style_preset"] = stylePreset
 
     if len(negativeQuestion) > 0:
         data["text_prompts[1][text]"] = negativeQuestion
